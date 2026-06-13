@@ -1,0 +1,29 @@
+body { margin:0; font-family: Arial, sans-serif; background:#f4f6f8; color:#222; }
+header { background:#1d3557; color:#fff; padding:20px; text-align:center; }
+main { padding:20px; max-width:1200px; margin:auto; }
+.cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:15px; margin-bottom:20px; }
+.card { background:#fff; padding:20px; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,.08); text-align:center; }
+.valor { font-size:28px; font-weight:bold; color:#1d3557; }
+.alerta { background:#ffe1e1; color:#b00020; border:2px solid #ff8a8a; }
+.normal { background:#e8ffe8; color:#107010; border:2px solid #8ee68e; }
+.sem-tremor { background:#eef7ff; border:2px solid #a8d5ff; }
+.fraco { background:#fff8d9; border:2px solid #ffd966; color:#8a6d00; }
+.medio { background:#ffe8cc; border:2px solid #ffad66; color:#9a4b00; }
+.forte { background:#ffe1e1; border:2px solid #ff7070; color:#b00020; }
+button { background:#1d3557; color:#fff; border:0; padding:12px 18px; border-radius:8px; cursor:pointer; margin:6px 5px 6px 0; }
+.graficos { display:grid; grid-template-columns: 1.4fr 1fr; gap:15px; margin-bottom:15px; }
+.grafico-box h2 { margin-top:0; font-size:18px; color:#1d3557; }
+canvas { background:#fff; border-radius:14px; padding:10px; max-height:360px; }
+table { width:100%; border-collapse:collapse; background:#fff; margin-top:15px; border-radius:10px; overflow:hidden; }
+th, td { padding:10px; border-bottom:1px solid #ddd; text-align:center; }
+th { background:#1d3557; color:#fff; }
+.ok { color:#107010; font-weight:bold; }
+.erro { color:#b00020; font-weight:bold; }
+.box { background:#fff; padding:15px; border-radius:12px; margin-bottom:15px; box-shadow:0 3px 10px rgba(0,0,0,.08); }
+.tag { padding:6px 10px; border-radius:999px; font-weight:bold; display:inline-block; }
+.tag.sem-tremor { background:#eef7ff; color:#1d3557; }
+.tag.fraco { background:#fff8d9; color:#8a6d00; }
+.tag.medio { background:#ffe8cc; color:#9a4b00; }
+.tag.forte { background:#ffe1e1; color:#b00020; }
+@media (max-width: 850px) { .graficos { grid-template-columns:1fr; } }
+@media print { button, .box.config { display:none; } body { background:#fff; } .graficos { grid-template-columns:1fr; } }
