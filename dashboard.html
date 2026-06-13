@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard Médico - IoT Parkinson</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+  <link rel="stylesheet" href="estilo.css" />
+</head>
+
+<body>
+<header>
+  <h1>Dashboard Médico - Monitoramento de Tremores</h1>
+  <p>Protótipo IoT para acompanhamento de paciente com Parkinson</p>
+</header>
+
+<main>
+  <div class="box config">
+    <strong>Status do sistema:</strong>
+    <span id="mqttStatus" class="erro">desconectado</span>
+    <br>
+
+    <button onclick="conectarMQTT()">Reconectar</button>
+    <button onclick="baixarCSV()">Baixar relatório CSV</button>
+    <button onclick="window.print()">Salvar/Imprimir relatório PDF</button>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Paciente</h3>
+      <div id="paciente" class="valor">Paciente 01</div>
+    </div>
+
+    <div class="card">
+      <h3>Variação</h3>
+      <div id="variacao" class="valor">0.00</div>
+    </div>
+
+    <div id="statusCard" class="card normal">
+      <h3>Status</h3>
+      <div id="status" class="valor">NORMAL</div>
+    </div>
+
+    <div id="intensidadeCard" class="card sem-tremor">
+      <h3>Intensidade</h3>
+      <div id="intensidade" class="valor">SEM TREMOR</div>
+    </div>
+
+    <div class="card">
+      <h3>Eventos de Tremor</h3>
+      <div id="eventos" class="valor">0</div>
+    </div>
+  </div>
+
+  <section class="graficos">
+    <div class="box grafico-box">
+      <h2>Variação do movimento em tempo real</h2>
+      <canvas id="grafico"></canvas>
+    </div>
+
+    <div class="box grafico-box">
+      <h2>Classificação dos tremores</h2>
+      <canvas id="graficoIntensidade"></canvas>
+    </div>
+  </section>
+
+  <h2>Relatório médico automático</h2>
+
+  <div class="box">
+    <p>
+      <strong>Total de leituras:</strong>
+      <span id="totalLeituras">0</span>
+    </p>
+
+    <p>
+      <strong>Maior variação registrada:</strong>
+      <span id="maiorVariacao">0.00</span>
+    </p>
+
+    <p>
+      <strong>Última intensidade:</strong>
+      <span id="ultimaIntensidade">SEM TREMOR</span>
+    </p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Data/Hora</th>
+        <th>AX</th>
+        <th>AY</th>
+        <th>AZ</th>
+        <th>GX</th>
+        <th>GY</th>
+        <th>GZ</th>
+        <th>Variação</th>
+        <th>Tremor</th>
+        <th>Intensidade</th>
+      </tr>
+    </thead>
+
+    <tbody id="tabela"></tbody>
+  </table>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
