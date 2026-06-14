@@ -20,9 +20,11 @@
   <div class="box config">
     <strong>Status do sistema:</strong>
     <span id="mqttStatus" class="erro">desconectado</span>
-    <br>
+    <br><br>
 
-    <button onclick="conectarMQTT()">Reconectar</button>
+    <button onclick="conectarMQTT()">Reconectar MQTT</button>
+    <button onclick="enviarComando('ALERTA_ON')">Ativar Alertas</button>
+    <button onclick="enviarComando('ALERTA_OFF')">Desativar Alertas</button>
     <button onclick="baixarCSV()">Baixar relatório CSV</button>
     <button onclick="window.print()">Salvar/Imprimir relatório PDF</button>
   </div>
@@ -52,6 +54,11 @@
       <h3>Eventos de Tremor</h3>
       <div id="eventos" class="valor">0</div>
     </div>
+
+    <div id="alertasCard" class="card normal">
+      <h3>Alertas</h3>
+      <div id="alertasAtivos" class="valor">ATIVOS</div>
+    </div>
   </div>
 
   <section class="graficos">
@@ -69,20 +76,10 @@
   <h2>Relatório médico automático</h2>
 
   <div class="box">
-    <p>
-      <strong>Total de leituras:</strong>
-      <span id="totalLeituras">0</span>
-    </p>
-
-    <p>
-      <strong>Maior variação registrada:</strong>
-      <span id="maiorVariacao">0.00</span>
-    </p>
-
-    <p>
-      <strong>Última intensidade:</strong>
-      <span id="ultimaIntensidade">SEM TREMOR</span>
-    </p>
+    <p><strong>Total de leituras:</strong> <span id="totalLeituras">0</span></p>
+    <p><strong>Maior variação registrada:</strong> <span id="maiorVariacao">0.00</span></p>
+    <p><strong>Última intensidade:</strong> <span id="ultimaIntensidade">SEM TREMOR</span></p>
+    <p><strong>Estado dos alertas:</strong> <span id="estadoAlertasRelatorio">ATIVOS</span></p>
   </div>
 
   <table>
@@ -98,6 +95,7 @@
         <th>Variação</th>
         <th>Tremor</th>
         <th>Intensidade</th>
+        <th>Alertas</th>
       </tr>
     </thead>
 
