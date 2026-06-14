@@ -1,5 +1,6 @@
 const TOPICO_DADOS = "parkinson/paciente01/dados";
 const TOPICO_ALERTA = "parkinson/paciente01/alerta";
+const TOPICO_COMANDO = "parkinson/paciente01/comando";
 
 let leituras = [];
 let eventosTremor = 0;
@@ -27,8 +28,13 @@ const grafico = new Chart(document.getElementById('grafico'), {
   options: {
     responsive: true,
     scales: {
-      y: { beginAtZero: true, title: { display: true, text: 'Variação' } },
-      x: { title: { display: true, text: 'Tempo' } }
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: 'Variação' }
+      },
+      x: {
+        title: { display: true, text: 'Tempo' }
+      }
     }
   }
 });
@@ -46,7 +52,10 @@ const graficoIntensidade = new Chart(document.getElementById('graficoIntensidade
   options: {
     responsive: true,
     scales: {
-      y: { beginAtZero: true, ticks: { precision: 0 } }
+      y: {
+        beginAtZero: true,
+        ticks: { precision: 0 }
+      }
     }
   }
 });
@@ -111,20 +120,47 @@ function conectarMQTT() {
   });
 }
 
+function enviarComando(comando) {
+  if (!client || !client.connected) {
+    alert("MQTT ainda não conectado.");
+    return;
+  }
+
+  client.publish(TOPICO_COMANDO, comando);
+
+  if (comando === "ALERTA_ON") {
+    document.getElementById('alertasAtivos').innerText = "ATIVOS";
+    document.getElementById('estadoAlertasRelatorio').innerText = "ATIVOS";
+    document.getElementById('alertasCard').className = "card normal";
+  }
+
+  if (comando === "ALERTA_OFF") {
+    document.getElementById('alertasAtivos').innerText = "DESATIVADOS";
+    document.getElementById('estadoAlertasRelatorio').innerText = "DESATIVADOS";
+    document.getElementById('alertasCard').className = "card alerta";
+  }
+}
+
 function atualizarDashboard(dado) {
   const agora = new Date().toLocaleString('pt-BR');
   const variacao = Number(dado.variacao || 0);
   const tremor = dado.tremor || 'NAO';
   const intensidade = classificarIntensidade(variacao, tremor);
+  const alertas = dado.alertasAtivos === "NAO" ? "DESATIVADOS" : "ATIVOS";
 
   dado.horario = agora;
   dado.intensidade = intensidade;
+  dado.alertas = alertas;
+
   leituras.push(dado);
 
   if (variacao > maiorVariacao) maiorVariacao = variacao;
 
-  document.getElementById('paciente').innerText = dado.paciente || 'Paciente 01';
-  document.getElementById('variacao').innerText = variacao.toFixed(2);
+  document.getElementById('paciente').innerText =
+    dado.paciente || 'Paciente 01';
+
+  document.getElementById('variacao').innerText =
+    variacao.toFixed(2);
 
   const statusCard = document.getElementById('statusCard');
   const status = document.getElementById('status');
@@ -141,14 +177,27 @@ function atualizarDashboard(dado) {
   }
 
   intensidadeTexto.innerText = intensidade;
-  intensidadeCard.className = 'card ' + classeIntensidade(intensidade);
+  intensidadeCard.className =
+    'card ' + classeIntensidade(intensidade);
+
+  document.getElementById('alertasAtivos').innerText = alertas;
+  document.getElementById('estadoAlertasRelatorio').innerText = alertas;
+
+  if (alertas === "ATIVOS") {
+    document.getElementById('alertasCard').className = "card normal";
+  } else {
+    document.getElementById('alertasCard').className = "card alerta";
+  }
 
   contagemIntensidade[intensidade]++;
 
   document.getElementById('eventos').innerText = eventosTremor;
   document.getElementById('totalLeituras').innerText = leituras.length;
-  document.getElementById('maiorVariacao').innerText = maiorVariacao.toFixed(2);
-  document.getElementById('ultimaIntensidade').innerText = intensidade;
+  document.getElementById('maiorVariacao').innerText =
+    maiorVariacao.toFixed(2);
+
+  document.getElementById('ultimaIntensidade').innerText =
+    intensidade;
 
   grafico.data.labels.push(new Date().toLocaleTimeString('pt-BR'));
   grafico.data.datasets[0].data.push(variacao);
@@ -183,16 +232,19 @@ function atualizarDashboard(dado) {
     <td>${variacao.toFixed(2)}</td>
     <td><strong>${tremor}</strong></td>
     <td><span class="tag ${classe}">${intensidade}</span></td>
+    <td>${alertas}</td>
   `;
 
   document.getElementById('tabela').prepend(tr);
 }
 
 function baixarCSV() {
-  let csv = 'Data/Hora,Paciente,AX,AY,AZ,GX,GY,GZ,Variacao,Tremor,Intensidade\n';
+  let csv =
+    'Data/Hora,Paciente,AX,AY,AZ,GX,GY,GZ,Variacao,Tremor,Intensidade,Alertas\n';
 
   leituras.forEach(d => {
-    csv += `${d.horario},${d.paciente || 'Paciente 01'},${d.ax},${d.ay},${d.az},${d.gx},${d.gy},${d.gz},${d.variacao},${d.tremor},${d.intensidade}\n`;
+    csv +=
+      `${d.horario},${d.paciente || 'Paciente 01'},${d.ax},${d.ay},${d.az},${d.gx},${d.gy},${d.gz},${d.variacao},${d.tremor},${d.intensidade},${d.alertas}\n`;
   });
 
   const blob = new Blob([csv], {
@@ -209,7 +261,6 @@ function baixarCSV() {
   URL.revokeObjectURL(url);
 }
 
-// Conecta automaticamente ao MQTT quando o dashboard abrir
 window.addEventListener("load", () => {
   setTimeout(() => {
     conectarMQTT();
